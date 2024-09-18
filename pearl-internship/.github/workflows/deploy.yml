@@ -26,7 +26,7 @@ jobs:
       - name: Deploy Medusa on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-          cd /home/ubuntu/medusa-app
+          cd /home/ubuntu/pearl-internship
           npm install
           pm2 stop medusa || true
           pm2 start ./bin/start -n medusa
