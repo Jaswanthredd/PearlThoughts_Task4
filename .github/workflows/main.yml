@@ -25,7 +25,7 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -r $GITHUB_WORKSPACE/* ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/medusa-app
 
-      - name: Install Node.js and PM2 on EC2
+      - name: Install Node.js, PM2, and Medusa CLI on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
           sudo apt update
@@ -33,6 +33,7 @@ jobs:
           curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
           sudo apt install -y nodejs
           sudo npm install pm2 -g
+          sudo npm install @medusajs/medusa-cli -g  # Install Medusa CLI globally
           EOF
 
       - name: Deploy Medusa on EC2
@@ -41,5 +42,5 @@ jobs:
           cd /home/ubuntu/medusa-app
           npm install
           pm2 stop medusa || true
-          pm2 start npm --name medusa -- run start  # Replace with 'run develop' if using develop mode
+          pm2 start npm --name medusa -- run start  # Replace 'run start' with 'run develop' for dev mode
           EOF
