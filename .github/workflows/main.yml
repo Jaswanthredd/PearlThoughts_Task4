@@ -10,26 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Add SSH key to allow connection to EC2
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # List files in the working directory (for debugging)
       - name: List files in workspace
         run: ls -la $GITHUB_WORKSPACE
 
-      # Copy files from the repository to the EC2 instance
       - name: Copy files to EC2
         run: |
           scp -o StrictHostKeyChecking=no -r $GITHUB_WORKSPACE/* ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/medusa-app
 
-      # SSH into EC2 and deploy the Medusa app
+      - name: Install Node.js and PM2 on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          sudo apt update
+          sudo apt install -y curl
+          curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+          sudo apt install -y nodejs
+          sudo npm install pm2 -g
+          EOF
+
       - name: Deploy Medusa on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
