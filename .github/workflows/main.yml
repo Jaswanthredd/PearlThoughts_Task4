@@ -41,5 +41,5 @@ jobs:
           cd /home/ubuntu/medusa-app
           npm install
           pm2 stop medusa || true
-          pm2 start ./bin/start -n medusa
+          pm2 start npm --name medusa -- run start  # Replace with 'run develop' if using develop mode
           EOF
